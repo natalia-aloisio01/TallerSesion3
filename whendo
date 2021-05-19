@@ -1,0 +1,59 @@
+package runner;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+public class MyStepWhendo {
+    private AppiumDriver driver;
+    @Given("yo tengo abierto el whendo")
+    public void yoTengoAbiertoElWhendo() throws MalformedURLException {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("deviceName","R28M402AG3H");
+        capabilities.setCapability("platformVersion","11");
+        capabilities.setCapability("appPackage","com.vrproductiveapps.whendo");
+        capabilities.setCapability("appActivity",".ui.ShareReceiveActivity");
+        capabilities.setCapability("platformName","Android");
+
+
+        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+    }
+
+    @When("yo realizo click en el botton add")
+    public void yoRealizoClickEnElBottonAdd() {
+        driver.findElement(By.xpath("//android.widget.ListView[@resource-id='com.vrproductiveapps.whendo:id/notesList']")).click();
+    }
+
+    @And("yo escribo en el campo titulo el valor {string}")
+    public void yoEscriboEnElCampoTituloElValor(String title) {
+        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.vrproductiveapps.whendo:id/noteTextTitle']")).sendKeys(title);
+    }
+
+    @And("yo escribo en el campo notas el valor {string}")
+    public void yoEscriboEnElCampoNotasElValor(String note) {
+        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.vrproductiveapps.whendo:id/noteTextNotes']")).sendKeys(note);
+    }
+
+    @And("yo hago click en el boton guardar")
+    public void yoHagoClickEnElBotonGuardar() {
+        driver.findElement(By.xpath("//android.widget.TextView[@resource-id='com.vrproductiveapps.whendo:id/saveItem']")).click();
+    }
+
+    @Then("la nota con titulo {string} deberia ser mostrada en la lista de notas")
+    public void laNotaConTituloDeberiaSerMostradaEnLaListaDeNotas(String title) {
+        String expectedNote = "Nota 1";
+        String actualList=driver.findElement(By.xpath("//android.widget.TextView[@resource-id=''"+title+"]")).getText();
+        Assert.assertEquals("No se agregaron tareas ",expectedNote,actualList);
+    }
+}
